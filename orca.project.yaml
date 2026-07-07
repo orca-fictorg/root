@@ -1,0 +1,11 @@
+composeFiles:
+  primary: docker-compose.yml
+
+envFiles:
+- path: .dockerenv
+
+tlsCerts:
+- '*.orca-fictorg.test'
+
+hosts:
+- root.orca-fictorg.test
