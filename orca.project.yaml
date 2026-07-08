@@ -1,8 +1,16 @@
 composeFiles:
   primary: docker-compose.yml
 
+provisioners:
+- exampleFile:
+    src: .dockerenv.example
+    target: .dockerenv
+    type: dotenv
+
+
 envFiles:
 - path: .dockerenv
+  fromExample: .dockerenv.example
 
 tlsCerts:
 - '*.orca-fictorg.test'
