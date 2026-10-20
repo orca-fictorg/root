@@ -1,1 +1,4 @@
 .dockerenv
+orca.preferences.yaml
+.seeded
+.DS_Store

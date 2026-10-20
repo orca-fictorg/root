@@ -1,0 +1,5 @@
+# The wildcard certificate orca generates for the tlsCerts in orca.project.yaml
+tls:
+  certificates:
+    - certFile: /certs/_.orca-fictorg.test.cert
+      keyFile: /certs/_.orca-fictorg.test.key

@@ -1,5 +1,30 @@
 services:
-  nginx:
-    image: nginx:latest
+  traefik:
+    image: traefik:v3.7.13
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      # The network orca's network overlay joins every project to
+      - --providers.docker.network=orca-ws-orca-fictorg
+      - --providers.file.filename=/etc/traefik/dynamic.yaml
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.websecure.address=:443
     ports:
-      - "${NGINX_HOST_PORT}:80"
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/dynamic.yaml:/etc/traefik/dynamic.yaml:ro
+    labels:
+      # orca mounts the certificates from 'orca tls gen' here
+      orca.pantoptescloud.tls/inject-certs: "/certs/"
+
+  nginx:
+    image: nginx:alpine
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.root.rule: Host(`root.orca-fictorg.test`)
+      traefik.http.routers.root.entrypoints: websecure
+      traefik.http.routers.root.tls: "true"
+      traefik.http.services.root.loadbalancer.server.port: "80"

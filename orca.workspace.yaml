@@ -1,18 +1,67 @@
-name: "orca-fictorg"
+name: orca-fictorg
 
 overlays:
   network:
     enabled: true
     createIn: root
-    disableAliases: false
 
 projects:
-- name: root
-  base: true
-  repository:
-    self: true
-- name: svc-a
-  repository:
-    ssh: git@github.com:orca-fictorg/svc-a.git
-  requires:
-    - root
+  # This repository: the workspace config, and traefik, which routes the
+  # *.orca-fictorg.test hosts to the other projects
+  - name: root
+    repository:
+      self: true
+
+  - name: svc-a
+    repository:
+      ssh: git@github.com:orca-fictorg/svc-a.git
+    requires:
+      - root
+
+  # A library: cloned and set up, never started. It's cloned inside svc-a, and
+  # svc-b links it into its node_modules.
+  - name: sdk
+    type: library
+    path: svc-a/vendor/sdk
+    repository:
+      ssh: git@github.com:orca-fictorg/sdk.git
+
+  # svc-b is trying orca on a branch before merging it
+  - name: svc-b
+    repository:
+      ssh: git@github.com:orca-fictorg/svc-b.git
+      branch: orca-adoption
+    requires:
+      - svc-a
+      - sdk
+
+  # Cloned, but not started unless you enable it
+  - name: admin
+    enabled: false
+    repository:
+      ssh: git@github.com:orca-fictorg/admin.git
+    requires:
+      - root
+
+# These run in this repository, or in a project's directory when a project's
+# hook runs them with 'scope: workspace'
+extensions:
+  - name: check-tools
+    command: ./scripts/check-tools.sh
+    description: Check the tools the workspace needs are installed
+
+  - name: install-deps
+    command: make deps
+    description: Install a project's dependencies
+
+  - name: seed
+    command: ./scripts/seed.sh
+    description: Seed the sample data
+
+hooks:
+  init:
+    post:
+      - extension: seed
+  up:
+    pre:
+      - extension: check-tools

@@ -1,19 +1,23 @@
 composeFiles:
   primary: docker-compose.yml
 
-provisioners:
-- exampleFile:
-    src: .dockerenv.example
-    target: .dockerenv
-    type: dotenv
-
-
 envFiles:
-- path: .dockerenv
-  fromExample: .dockerenv.example
+  - path: .dockerenv
 
 tlsCerts:
-- '*.orca-fictorg.test'
+  - '*.orca-fictorg.test'
 
 hosts:
-- root.orca-fictorg.test
+  - root.orca-fictorg.test
+
+extensions:
+  - name: dockerenv
+    type: syncFile
+    source: .dockerenv.example
+    target: .dockerenv
+    description: Create .dockerenv from .dockerenv.example
+
+hooks:
+  clone:
+    post:
+      - extension: dockerenv
