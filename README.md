@@ -23,6 +23,6 @@ orca up
 | `svc-b` | A node service, cloned on its `orca-adoption` branch, which links `sdk` into `node_modules` with a `symlink` extension. |
 | `admin` | Disabled by default: cloned and set up, but not started. |
 
-The workspace's own extensions, `check-tools`, `install-deps` and `seed`, are shared: `install-deps` runs `make deps` in each project that uses it.
+Every extension belongs to a project. `check-tools` and `seed` are `root`'s, and each project has its own `install-deps`. The workspace config only has `init.post`, which runs `root`'s `seed` once everything is set up.
 
 Without adding the hosts to `/etc/hosts`, reach a service with `curl -k --resolve svc-a.orca-fictorg.test:28443:127.0.0.1 https://svc-a.orca-fictorg.test:28443`.

@@ -17,7 +17,24 @@ extensions:
     target: .dockerenv
     description: Create .dockerenv from .dockerenv.example
 
+  - name: install-deps
+    command: make deps
+    description: Install root's dependencies
+
+  - name: check-tools
+    command: ./scripts/check-tools.sh
+    description: Check the tools the workspace needs are installed
+
+  # Run by the workspace's init.post, once everything is cloned
+  - name: seed
+    command: ./scripts/seed.sh
+    description: Seed the sample data
+
 hooks:
   clone:
     post:
       - extension: dockerenv
+      - extension: install-deps
+  up:
+    pre:
+      - extension: check-tools
