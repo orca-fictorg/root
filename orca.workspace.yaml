@@ -22,7 +22,6 @@ projects:
   # svc-b links it into its node_modules.
   - name: sdk
     type: library
-    path: svc-a/vendor/sdk
     repository:
       ssh: git@github.com:orca-fictorg/sdk.git
 
